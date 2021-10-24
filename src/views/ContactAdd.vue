@@ -30,9 +30,7 @@ export default {
     };
   },
   methods: {
-    initContact() {
-      // maybe not...      
-    },
+    initContact() {},
     async addContact(data) {
       console.log("input: ", data);
       const [error, response] = await this.handle(
