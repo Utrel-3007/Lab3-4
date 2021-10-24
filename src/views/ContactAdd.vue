@@ -20,8 +20,8 @@ export default {
   data() {
     return {
       contact: {
-        name: "AAA",
-        email: "",
+        name: "Nguyen Van A",
+        email: "@examble.com",
         address: "",
         phone: "",
         favorite: false
