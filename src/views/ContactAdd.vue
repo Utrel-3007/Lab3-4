@@ -20,11 +20,11 @@ export default {
   data() {
     return {
       contact: {
-        name: "Nguyen Van A",
-        email: "@examble.com",
+        name: "",
+        email: "",
         address: "",
         phone: "",
-        favorite: false
+        favorite: false,
       },
       message: "",
     };
@@ -33,9 +33,7 @@ export default {
     initContact() {},
     async addContact(data) {
       console.log("input: ", data);
-      const [error, response] = await this.handle(
-        ContactService.create(data)
-      );
+      const [error, response] = await this.handle(ContactService.create(data));
       if (error) {
         console.log(error);
       } else {
