@@ -1,0 +1,29 @@
+{
+    "name": "contactbook-backend",
+    "version": "1.0.0",
+    "main": "server.js",
+    "scripts": {
+        "start": "nodemon server.js"
+    },
+    "author": "Nguyen Chi Loi",
+    "license": "ISC",
+    "dependencies": {
+        "cors": "^2.8.5",
+        "express": "^4.17.1",
+        "mongoose": "^6.0.7",
+        "validator": "^13.6.0"
+    },
+    "devDependencies": {
+        "nodemon": "^2.0.12"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/NCLoi/UDWeb-CT449.git"
+    },
+    "keywords": [],
+    "bugs": {
+        "url": "https://github.com/NCLoi/UDWeb-CT449/issues"
+    },
+    "homepage": "https://github.com/NCLoi/UDWeb-CT449#readme",
+    "description": ""
+}
