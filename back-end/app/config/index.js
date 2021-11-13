@@ -1,12 +1,12 @@
 const config = {
     app: {
-        port: process.env.PORT || 8080,
-        origins: [
-            "http://localhost:8081"
-        ]
+        port: process.env.PORT || 8080
     },
     db: {
         url: "mongodb://localhost:27017/contactbook"
+    },
+    jwt: {
+        secret: "contactbook-secret-key"
     }
 };
 

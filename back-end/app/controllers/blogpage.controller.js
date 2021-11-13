@@ -1,33 +1,32 @@
 const { BadRequestError } = require("../helpers/errors");
 const handle = require("../helpers/promise");
 const db = require("../models");
-const Contact = db.Contact;
+const Blog = db.Blog;
 
-// Create and Save a new Contact
+// Create and Save a new Blog
 exports.create = async (req, res, next) => {
     // Validate request
-    if (!req.body.name) {
+    if (!req.body.title) {
         return next(new BadRequestError(400, "Name can not be empty"));
     }
 
-    // Create a contact
-    const contact = new Contact({
-        name: req.body.name,
-        email: req.body.email,
-        address: req.body.address,
-        phone: req.body.phone,
-        favorite: String(req.body.favorite).toLowerCase() === "true",
+    // Create a Blog
+    const blog = new Blog({
+        title: req.body.title,
+        content: req.body.content,
+        authorname: req.body.authorname,
+        currenttime: req.body.currenttime,
         ownerId: req.userId,
     });
 
-    // Save contact in the database
-    const [error, document] = await handle(contact.save());
+    // Save Blog in the database
+    const [error, document] = await handle(Blog.save());
 
     if (error) {
         return next(
             new BadRequestError(
                 500,
-                "An error occurred while creating the contact"
+                "An error occurred while creating the Blog"
             )
         );
     }
@@ -35,23 +34,27 @@ exports.create = async (req, res, next) => {
     return res.send(document);
 };
 
-// Retrieve all contacts of a user from the database
+// Retrieve all Blogs of a user from the database
 exports.findAll = async (req, res, next) => {
     const condition = { ownerId: req.userId };
-    const name = req.query.name;
-    if (name) {
-        condition.name = { $regex: new RegExp(name), $options: "i" };
+    const title = req.query.title;
+    const author = req.query.authorname;
+    if (title) {
+        condition.title = { $regex: new RegExp(title), $options: "i" };
     }
 
+    else if(author) {
+        condition.author = { $regex: new RegExp(author), $options: "i" };
+    }
     const [error, documents] = await handle(
-        Contact.find(condition, "-ownerId")
+        Blog.find(condition, "-ownerId")
     );
 
     if (error) {
         return next(
             new BadRequestError(
                 500,
-                "An error occurred while retrieving contacts"
+                "An error occurred while retrieving Blogs"
             )
         );
     }
@@ -59,7 +62,7 @@ exports.findAll = async (req, res, next) => {
     return res.send(documents);
 };
 
-// Find a single contact with an id
+// Find a single Blog with an id
 exports.findOne = async (req, res, next) => {
     const condition = {
         _id: req.params.id,
@@ -67,26 +70,26 @@ exports.findOne = async (req, res, next) => {
     };
 
     const [error, document] = await handle(
-        Contact.findOne(condition, "-ownerId")
+        Blog.findOne(condition, "-ownerId")
     );
 
     if (error) {
         return next(
             new BadRequestError(
                 500,
-                `Error retrieving contact with id=${req.params.id}`
+                `Error retrieving Blog with id=${req.params.id}`
             )
         );
     }
 
     if (!document) {
-        return next(new BadRequestError(404, "Contact not found"));
+        return next(new BadRequestError(404, "Blog not found"));
     }
 
     return res.send(document);
 };
 
-// Update a contact by the id in the request
+// Update a Blog by the id in the request
 exports.update = async (req, res, next) => {
     if (!req.body) {
         return next(
@@ -100,7 +103,7 @@ exports.update = async (req, res, next) => {
     };
 
     const [error, document] = await handle(
-        Contact.findOneAndUpdate(condition, req.body, {
+        Blog.findOneAndUpdate(condition, req.body, {
             new: true,
             projection: "-ownerId",
         })
@@ -110,19 +113,19 @@ exports.update = async (req, res, next) => {
         return next(
             new BadRequestError(
                 500,
-                `Error updating contact with id=${req.params.id}`
+                `Error updating Blog with id=${req.params.id}`
             )
         );
     }
 
     if (!document) {
-        return next(new BadRequestError(404, "Contact not found"));
+        return next(new BadRequestError(404, "Blog not found"));
     }
 
-    return res.send({ message: "Contact was updated successfully" });
+    return res.send({ message: "Blog was updated successfully" });
 };
 
-// Delete a contact with the specified id in the request
+// Delete a Blog with the specified id in the request
 exports.delete = async (req, res, next) => {
     const condition = {
         _id: req.params.id,
@@ -130,7 +133,7 @@ exports.delete = async (req, res, next) => {
     };
 
     const [error, document] = await handle(
-        Contact.findOneAndDelete(condition, {
+        Blog.findOneAndDelete(condition, {
             projection: "-ownerId",
         })
     );
@@ -139,58 +142,35 @@ exports.delete = async (req, res, next) => {
         return next(
             new BadRequestError(
                 500,
-                `Could not delete contact with id=${req.params.id}`
+                `Could not delete Blog with id=${req.params.id}`
             )
         );
     }
 
     if (!document) {
-        return next(new BadRequestError(404, "Contact not found"));
+        return next(new BadRequestError(404, "Blog not found"));
     }
 
-    return res.send({ message: "Contact was deleted successfully" });
+    return res.send({ message: "Blog was deleted successfully" });
 };
 
-// Delete all contacts of a user from the database
+// Delete all Blogs of a user from the database
 exports.deleteAll = async (req, res, next) => {
     const [error, data] = await handle(
-        Contact.deleteMany({ ownerId: req.userId })
+        Blog.deleteMany({ ownerId: req.userId })
     );
 
     if (error) {
         return next(
             new BadRequestError(
                 500,
-                "An error occurred while removing all contacts"
+                "An error occurred while removing all Blogs"
             )
         );
     }
 
     return res.send({
-        message: `${data.deletedCount} contacts were deleted successfully`,
+        message: `${data.deletedCount} Blogs were deleted successfully`,
     });
 };
 
-// Find all favorite contacts of a user
-exports.findAllFavorite = async (req, res, next) => {
-    const [error, documents] = await handle(
-        Contact.find(
-            {
-                favorite: true,
-                ownerId: req.userId,
-            },
-            "-ownerId"
-        )
-    );
-
-    if (error) {
-        return next(
-            new BadRequestError(
-                500,
-                "An error occurred while retrieving favorite contacts"
-            )
-        );
-    }
-
-    return res.send(documents);
-};

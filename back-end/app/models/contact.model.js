@@ -1,21 +1,29 @@
 module.exports = mongoose => {
-    const schema = mongoose.Schema({
-        name: {
-            type: String,
-            required: [true, " Contact name is required"],
+    const schema = mongoose.Schema(
+        {
+            name: {
+                type: String,
+                required: [true, "Contact name is required"],
+            },
+            email: {
+                type: String,
+                trim: true,
+                lowercase: true,
+            },
+            address: String,
+            phone: String,
+            favorite: Boolean,
+            ownerId: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "user"
+            },
+            
         },
-        email: {
-            type: String,
-            trim: true,
-            lowercase: true,
-        },
-        address: String,
-        phone: String,
-        favorite: Boolean,
-    }, { timestamps: true });
+        { timestamps: true }
+    );
 
-
-    schema.method("toJSON", function() {
+    // Replace _id with id and remove __V
+    schema.method("toJSON", function () {
         const { __v, _id, ...object } = this.toObject();
         object.id = _id;
         return object;
